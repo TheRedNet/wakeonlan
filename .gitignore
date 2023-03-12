@@ -4,4 +4,3 @@ embedFS/
 bin/
 .task/
 devices.json
-.history/

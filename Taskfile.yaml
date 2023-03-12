@@ -8,14 +8,41 @@ tasks:
   default: run
 
   run: 
-    deps: 
-      - build
     cmds:
-      - ./bin/wakeonlan{{exeExt}}
+      - task: build_generic
+        vars:
+          GOOS: '{{OS}}'
+          GOARCH: '{{ARCH}}'
+      - ./bin/wakeonlan_{{OS}}_{{ARCH}}{{exeExt}}
 
-  build: 
+  build:
+    cmds:
+      - task: build_generic
+        vars:
+          GOOS: '{{OS}}'
+          GOARCH: '{{ARCH}}'
+
+  build_all:
+    cmds:
+      - task: build_generic
+        vars:
+          GOOS: 'windows'
+          GOARCH: 'amd64'
+      - task: build_generic
+        vars:
+          GOOS: 'linux'
+          GOARCH: 'amd64' 
+      - task: build_generic
+        vars:
+          GOOS: 'linux'
+          GOARCH: 'arm64'                 
+
+  build_generic: 
+    env:
+      GOOS: '{{.GOOS}}'
+      GOARCH: '{{.GOARCH}}'
     generates:
-      - ./bin/wakeonlan{{exeExt}}
+      - ./bin/wakeonlan_{{.GOOS}}_{{.GOARCH}}{{if eq .GOOS "windows"}}.exe{{end}}
     sources:
       - main.go
       - pkg/*/*.go
@@ -23,22 +50,9 @@ tasks:
       - embedFS 
       - go-setup
     cmds:
-      - go build -o bin/
+      - go build -o bin/wakeonlan_{{.GOOS}}_{{.GOARCH}}{{if eq .GOOS "windows"}}.exe{{end}}
 
-  buildpi: 
-    generates:
-      - ./bin/wakeonlan
-    sources:
-      - main.go
-      - pkg/**/*.go
-    deps:
-      - embedFS 
-      - go-setup
-    env:
-      GOOS: linux
-      GOARCH: arm64 
-    cmds:
-      - go build -o bin/
+  
 
   go-setup: #go.sum embedfs/
     sources:

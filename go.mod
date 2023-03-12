@@ -4,9 +4,10 @@ go 1.19
 
 require github.com/gofiber/fiber/v2 v2.42.0
 
-require github.com/sabhiram/go-wol v0.0.0-20211224004021-c83b0c2f887d
-
-require golang.org/x/net v0.0.0-20220906165146-f3363e06e74c
+require (
+	github.com/sabhiram/go-wol v0.0.0-20211224004021-c83b0c2f887d
+	golang.org/x/net v0.0.0-20220906165146-f3363e06e74c
+)
 
 require (
 	github.com/BurntSushi/toml v0.3.1 // indirect

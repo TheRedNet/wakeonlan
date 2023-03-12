@@ -1,6 +1,7 @@
 go.sum
-./embedFS
-./.history
-./bin
-./.task
-./devices.json
+embedFS/
+.history/
+bin/
+.task/
+devices.json
+.history/

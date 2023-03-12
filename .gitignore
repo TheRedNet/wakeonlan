@@ -1,6 +1,6 @@
 go.sum
 ./embedFS
-./history
+./.history
 ./bin
 ./.task
 ./devices.json

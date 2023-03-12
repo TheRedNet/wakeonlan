@@ -1,0 +1,63 @@
+version: "3"
+
+vars:
+  GO: go
+
+
+tasks:
+  default: run
+
+  run: 
+    deps: 
+      - build
+    cmds:
+      - ./bin/wakeonlan{{exeExt}}
+
+  build: 
+    generates:
+      - ./bin/wakeonlan{{exeExt}}
+    sources:
+      - main.go
+      - pkg/*/*.go
+    deps:
+      - embedFS 
+      - go-setup
+    cmds:
+      - go build -o bin/
+
+  buildpi: 
+    generates:
+      - ./bin/wakeonlan
+    sources:
+      - main.go
+      - pkg/**/*.go
+    deps:
+      - embedFS 
+      - go-setup
+    env:
+      GOOS: linux
+      GOARCH: arm64 
+    cmds:
+      - go build -o bin/
+
+  go-setup: #go.sum embedfs/
+    sources:
+      - go.mod
+    generates:
+      - go.sum
+    cmds:
+      - go mod tidy
+      - go mod download
+      - go mod verify
+      - go get github.com/UnnoTed/fileb0x
+
+  embedFS: 
+    deps:
+      - go-setup
+    sources:
+      - views/*
+      - assets/*
+    generates:
+      - embedFS/*
+    cmds:
+      - go generate

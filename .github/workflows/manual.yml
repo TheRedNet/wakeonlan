@@ -26,7 +26,7 @@ jobs:
       - name: Install Task
         uses: arduino/setup-task@v1
       - name: Build
-        run: task build_all
+        run: task build-all
       - name: Release
         uses: softprops/action-gh-release@v1
         with:

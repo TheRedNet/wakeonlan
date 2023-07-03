@@ -103,6 +103,8 @@ func handleWake(ctx *fiber.Ctx) error {
 	}
 	return ctx.Redirect("/")
 }
+
+// handles calls to "/" and renders the index page.
 func handleIndex(ctx *fiber.Ctx) error {
 	deviceMap, err := config.LoadDevices()
 	if err != nil {

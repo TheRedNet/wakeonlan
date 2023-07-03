@@ -3,11 +3,17 @@ version: "3"
 vars:
   GO: go
 
+output: #'prefixed'
+  group: {begin: '::group::{{.Task}}', end: '::endgroup::'}
+
+
 
 tasks:
-  default: run
+  default: task -l
+  
 
   run: 
+    desc: Run the app
     cmds:
       - task: build_generic
         vars:
@@ -16,14 +22,32 @@ tasks:
       - ./bin/wakeonlan_{{OS}}_{{ARCH}}{{exeExt}}
 
   build:
+    desc: Build for current OS or specifie os with "task build OS=your_os ARCH=your_arch"
     cmds:
       - task: build_generic
         vars:
           GOOS: '{{OS}}'
           GOARCH: '{{ARCH}}'
 
-  build_all:
+  list-dists:
+    desc: List all supported OS/ARCH combinations
     cmds:
+      - go tool dist list
+
+  build-all:
+    desc: build for all major OS/ARCH combinations
+    cmds:
+      - task: build-deps
+      - task: build-all-concurrent
+        parallel: true
+      
+
+
+  # Build binaries concurrently
+
+  build-all-concurrent:
+    desc: build for all major OS/ARCH combinations
+    deps:
       - task: build_generic
         vars:
           GOOS: 'windows'
@@ -35,9 +59,29 @@ tasks:
       - task: build_generic
         vars:
           GOOS: 'linux'
-          GOARCH: 'arm64'                 
+          GOARCH: '386'    
+      - task: build_generic
+        vars:
+          GOOS: 'linux'
+          GOARCH: 'arm64'
+      - task: build_generic
+        vars:
+          GOOS: 'linux'
+          GOARCH: 'arm'
+
+  build-deps:
+    desc: prepare the build environment
+    deps:
+      - go-setup
+      - embedFS
+
+          
+
 
   build_generic: 
+    internal: true
+    label: 'build_{{.GOOS}}_{{.GOARCH}}'
+    run: when_changed
     env:
       GOOS: '{{.GOOS}}'
       GOARCH: '{{.GOARCH}}'
@@ -46,11 +90,14 @@ tasks:
     sources:
       - main.go
       - pkg/*/*.go
-    deps:
-      - embedFS 
-      - go-setup
+      - embedFS/*
     cmds:
       - go build -o bin/wakeonlan_{{.GOOS}}_{{.GOARCH}}{{if eq .GOOS "windows"}}.exe{{end}}
+    preconditions:
+      - test -n '{{.GOOS}}'
+      - test -n '{{.GOARCH}}'
+      - test -f go.sum
+      - test -d embedFS
 
   
 
@@ -75,3 +122,5 @@ tasks:
       - embedFS/*
     cmds:
       - go generate
+
+  

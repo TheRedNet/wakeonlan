@@ -3,8 +3,8 @@ version: "3"
 vars:
   GO: go
 
-output: #'prefixed'
-  group: {begin: '::group::{{.Task}}', end: '::endgroup::'}
+#output: #'prefixed'
+#  group: {begin: '::group::{{.TASK}}', end: '::endgroup::'}
 
 
 
@@ -12,14 +12,17 @@ tasks:
   default: task -l
   
 
-  run: 
-    desc: Run the app
+  run-server: 
+    desc: Run the Server
     cmds:
       - task: build_generic
         vars:
           GOOS: '{{OS}}'
           GOARCH: '{{ARCH}}'
       - ./bin/wakeonlan_{{OS}}_{{ARCH}}{{exeExt}}
+    deps:
+      - task: build-deps
+
 
   build:
     desc: Build for current OS or specifie os with "task build OS=your_os ARCH=your_arch"
@@ -28,6 +31,8 @@ tasks:
         vars:
           GOOS: '{{OS}}'
           GOARCH: '{{ARCH}}'
+    deps:
+      - task: build-deps      
 
   list-dists:
     desc: List all supported OS/ARCH combinations
@@ -72,7 +77,6 @@ tasks:
   build-deps:
     desc: prepare the build environment
     deps:
-      - go-setup
       - embedFS
 
           
@@ -92,7 +96,8 @@ tasks:
       - pkg/*/*.go
       - embedFS/*
     cmds:
-      - go build -o bin/wakeonlan_{{.GOOS}}_{{.GOARCH}}{{if eq .GOOS "windows"}}.exe{{end}}
+      - go build -o bin/wakeonlan_{{.GOOS}}_{{.GOARCH}}{{if eq .GOOS "windows"}}.exe{{end}} cmd/server/main.go
+      - echo "Build for {{.GOOS}}/{{.GOARCH}} done"
     preconditions:
       - test -n '{{.GOOS}}'
       - test -n '{{.GOARCH}}'
@@ -123,4 +128,10 @@ tasks:
     cmds:
       - go generate
 
+
+
+  run-client:
+    desc: Run the Client
+    cmds:
+      - go run cmd/client/main.go
   

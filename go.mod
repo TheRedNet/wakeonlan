@@ -11,6 +11,7 @@ require (
 
 require (
 	github.com/BurntSushi/toml v0.3.1 // indirect
+	github.com/TheTitanrain/w32 v0.0.0-20180517000239-4f5cfb03fabf // indirect
 	github.com/UnnoTed/fileb0x v1.1.4 // indirect
 	github.com/bmatcuk/doublestar v1.1.1 // indirect
 	github.com/gizak/termui/v3 v3.1.0 // indirect
@@ -38,6 +39,7 @@ require (
 	github.com/rivo/uniseg v0.2.0 // indirect
 	github.com/savsgio/dictpool v0.0.0-20221023140959-7bf2e61cea94 // indirect
 	github.com/savsgio/gotils v0.0.0-20220530130905-52f3993e8d6d // indirect
+	github.com/sqweek/dialog v0.0.0-20220809060634-e981b270ebbf
 	github.com/tinylib/msgp v1.1.6 // indirect
 	github.com/valyala/bytebufferpool v1.0.0 // indirect
 	github.com/valyala/fasthttp v1.44.0 // indirect

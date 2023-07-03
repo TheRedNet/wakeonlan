@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net"
 
+	"github.com/TheRedNet/wakeonlan/embedFS"
 	"github.com/TheRedNet/wakeonlan/pkg/config"
 	fiber "github.com/gofiber/fiber/v2"
 	"github.com/gofiber/template/html"
@@ -108,7 +109,7 @@ func handleWake(ctx *fiber.Ctx) error {
 func handleIndex(ctx *fiber.Ctx) error {
 	deviceMap, err := config.LoadDevices()
 	if err != nil {
-		lastError = fmt.Sprintf("Failed to load devices.json: %v", err)
+		lastError = fmt.Sprintf("Failed to load config.json: %v", err)
 		//return ctx.Redirect("/")
 	}
 	var devices []config.Device
@@ -122,7 +123,7 @@ func handleIndex(ctx *fiber.Ctx) error {
 	if hasErrored {
 		println(displayedError)
 	}
-	return ctx.Render("index", fiber.Map{
+	return ctx.Render("views/index", fiber.Map{
 		"Devices":    devices,
 		"EditMode":   editModebool,
 		"LastError":  displayedError,
@@ -131,13 +132,26 @@ func handleIndex(ctx *fiber.Ctx) error {
 }
 
 func main() {
-	engine := html.New("./views", ".html")
+	fmt.Println("---- Preparing server ----")
+	fmt.Println("Creating engine...")
+	engine := html.NewFileSystem(embedFS.HTTP, ".html")
+	fmt.Println("Creating app...")
 	app := fiber.New(fiber.Config{
 		Views: engine,
 	})
+	fmt.Println("Setting up routes...")
+	fmt.Println("Route: GET /")
 	app.Get("/", handleIndex)
+	fmt.Println("Route: POST /wake")
 	app.Post("/wake", handleWake)
+	fmt.Println("Route: POST /toggle")
 	app.Post("/toggle", handleToggle)
+	fmt.Println("Route: POST /edit")
 	app.Post("/edit", handleEdit)
-	app.Listen("127.0.0.1:8080")
+	fmt.Println("---- Starting server on port 8000 ----")
+	err := app.Listen("0.0.0.0:8000")
+	if err != nil {
+		fmt.Printf("Server failed: %v/n", err)
+	}
+	fmt.Println("---- Server stopped ----")
 }

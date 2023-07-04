@@ -112,6 +112,7 @@ tasks:
     generates:
       - go.sum
     cmds:
+      - mkdir embedFS
       - go mod tidy
       - go mod download
       - go mod verify

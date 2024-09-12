@@ -4,3 +4,5 @@ embedFS/
 bin/
 .task/
 devices.json
+config.json
+

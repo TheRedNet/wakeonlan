@@ -115,7 +115,7 @@ tasks:
 #      - go mod tidy
       - go mod download
       - go mod verify
-      - go get github.com/UnnoTed/fileb0x
+
 
   embedFS: 
     deps:
@@ -126,8 +126,10 @@ tasks:
     generates:
       - embedFS/*
     cmds:
+      - go get github.com/UnnoTed/fileb0x
       - go generate
       - go mod tidy
+      
 
 
 

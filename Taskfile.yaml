@@ -127,6 +127,7 @@ tasks:
       - embedFS/*
     cmds:
       - go generate
+      - go mod tidy
 
 
 
